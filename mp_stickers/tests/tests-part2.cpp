@@ -23,10 +23,9 @@ TEST_CASE("A basic StickerSheet works", "[weight=5][part=2][timeout=30000][valgr
 
   StickerSheet sheet(alma, 5);
   sheet.addSticker(i, 20, 200);
-
   Image expected;
   expected.readFromFile("../tests/expected.png");
-
+  
   REQUIRE( sheet.render() == expected );
 }
 
@@ -269,7 +268,7 @@ TEST_CASE("StickerSheet's assignment operator makes an independent copy", "[weig
 
 //
 // out of bounds with sanity checks
-//
+// //
 TEST_CASE("A Stickersheet with stickers placed beyond base image boundaries works", "[weight=5][part=2][timeout=30000][valgrind]") {
   Image alma; alma.readFromFile("../tests/alma.png");
   Image i;    i.readFromFile("../tests/i.png");

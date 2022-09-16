@@ -124,7 +124,6 @@ namespace cs225 {
   bool PNG::readFromFile(string const & fileName) {
     vector<unsigned char> byteData;
     unsigned error = lodepng::decode(byteData, width_, height_, fileName);
-
     if (error) {
       cerr << "PNG decoder error " << error << ": " << lodepng_error_text(error) << endl;
       return false;
