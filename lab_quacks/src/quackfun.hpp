@@ -29,9 +29,14 @@ namespace QuackFun {
 template <typename T>
 T sum(stack<T>& s)
 {
-
-    // Your code here
-    return T(); // stub return value (0 for primitive types). Change this!
+    if (s.size() == 0) {
+        return 0;
+    }
+    T temp = s.top();
+    s.pop();
+    double total = temp + sum(s);
+    s.push(temp);
+    return total; // stub return value (0 for primitive types). Change this!
                 // Note: T() is the default value for objects, and 0 for
                 // primitive types
 }
@@ -57,7 +62,20 @@ bool isBalanced(queue<char> input)
 {
 
     // @TODO: Make less optimistic
-    return true;
+    stack<char> s;
+    while (!(input.empty())) {
+        if (input.front() == '[') {
+            s.push(input.front());
+        } 
+        if (input.front() == ']') {
+            if (s.empty()) { // check if its empty because you should only be pushing '[' at this point. if its empty, then there was no '['
+                return false;
+            }
+            s.pop();
+        }
+        input.pop();
+    }
+    return s.empty();
 }
 
 /**
@@ -78,9 +96,33 @@ bool isBalanced(queue<char> input)
 template <typename T>
 void scramble(queue<T>& q)
 {
-    stack<T> s;
-    // optional: queue<T> q2;
-
     // Your code here
+    stack<T> s;
+    int size = 0;
+    int q_size = q.size();
+    queue<T> to_return;
+    while (!(q.empty())) {
+        std::cout << size << std::endl;
+        std::cout << q_size << std::endl;
+        int min = (q_size < size)? q_size : size;
+        if (size%2 == 0) { // then you reverse the numbers by using stack
+            for (int i=0; i<min; i++) {
+                s.push(q.front());
+                q.pop();
+            }
+            while (!(s.empty())) {
+                to_return.push(s.top());
+                s.pop();
+            }
+        } else {
+            for (int i=0; i<min; i++) {
+                to_return.push(q.front());
+                q.pop();
+            }
+        }
+        q_size-=min;
+        size++;
+    }
+    q=to_return;
 }
 }
