@@ -36,17 +36,17 @@ TEST_CASE("List::insertBack size", "[weight=2][part=1][valgrind]") {
 TEST_CASE("List::insert contents", "[weight=4][part=1][valgrind]") {
     List<int> list;
 
-    list.insertBack(3);
-    list.insertBack(2);
     list.insertBack(1);
-    list.insertFront(3);
-    list.insertFront(2);
-    list.insertFront(1);
+    list.insertBack(2);
+    list.insertBack(3);
+    list.insertFront(4);
+    list.insertFront(5);
+    list.insertFront(6);
 
     stringstream s;
     list.print(s);
 
-    REQUIRE( "< 1 2 3 3 2 1 >" == s.str() );
+    REQUIRE( "< 6 5 4 1 2 3 >" == s.str() );
 }
 
 TEST_CASE("List::triplerotate basic", "[weight=5][part=1][valgrind]") {
