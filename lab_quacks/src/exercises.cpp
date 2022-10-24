@@ -45,6 +45,7 @@ int RecursionExercises::sumDigits(int n)
  * @param rows The number of horizontal rows in the triangle
  * @return     The total number of blocks in the triangle pyramid
  */
+ //
 int RecursionExercises::triangle(int rows)
 {
     if (rows==0) {
