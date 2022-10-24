@@ -338,6 +338,7 @@ class BTree
  * the sorted order of elements. If val occurs in elements, then this returns
  * the index of val in elements.
  */
+ //
 template <class T, class C>
 size_t insertion_idx(const std::vector<T>& elements, const C& val)
 {
