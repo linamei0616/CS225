@@ -2,7 +2,7 @@
  * @file decoder.cpp
  * Implementation of a namespace for decoding files using HuffmanTrees.
  */
-
+//
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
