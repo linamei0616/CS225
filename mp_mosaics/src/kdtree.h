@@ -262,10 +262,10 @@ class KDTree
      * @todo Add your helper functions here.
      */
     void del(KDTreeNode*& subroot);
-    typename KDTree<Dim>::KDTreeNode* buildTree(vector<Point<Dim>>& points, unsigned left, unsigned right, int dim);
-    unsigned quickSelectHelper(vector<Point<Dim>>& list, int dimension, unsigned left, unsigned right, unsigned pivotIndex);
-    Point<Dim>& quickSelect(vector<Point<Dim>>& list, int dimension, unsigned left, unsigned right, unsigned k);
-    Point<Dim> findNearestNeighborHelper(Point<Dim> nearest, const Point<Dim> query, KDTreeNode *subroot, int dimension) const;
+    typename KDTree<Dim>::KDTreeNode* buildTree(vector<Point<Dim>>& list, unsigned left, unsigned right, int dim);
+    unsigned quickSelectHelper(vector<Point<Dim>>& list, unsigned left, unsigned right, unsigned pivotIndex, int dim);
+    Point<Dim>& quickSelect(vector<Point<Dim>>& list, unsigned left, unsigned right, unsigned k, int dim);
+    Point<Dim> findNearestNeighborHelper(Point<Dim> nearest, const Point<Dim> query, KDTreeNode *subroot, int dim) const;
     int calculate(const Point<Dim> & first, const Point<Dim> & second) const;
 
 };

@@ -75,9 +75,9 @@ KDTree<Dim>::KDTree(const vector<Point<Dim>>& newPoints)
 }
 
 template <int Dim>
-unsigned KDTree<Dim>::quickSelectHelper(vector<Point<Dim>>& list, int dimension, unsigned left, unsigned right, unsigned pivotIndex) {
+unsigned KDTree<Dim>::quickSelectHelper(vector<Point<Dim>>& list, unsigned left, unsigned right, unsigned pivotIndex, int dim) {
   /*
-  Pseudocode:
+  AMA Slides Pseudocode:
       pivotValue := list[pivotIndex]
       swap list[pivotIndex] and list[right]  // Move pivot to end
       storeIndex := left
@@ -93,7 +93,7 @@ unsigned KDTree<Dim>::quickSelectHelper(vector<Point<Dim>>& list, int dimension,
   	unsigned storeIndex = left;
 
   	for (unsigned i = left; i < right; i++){
-    	if (smallerDimVal(list[i], pivotValue, dimension)) {
+    	if (smallerDimVal(list[i], pivotValue, dim)) {
         std::swap(list[storeIndex], list[i]);
       		storeIndex++;
     	}
@@ -103,9 +103,9 @@ unsigned KDTree<Dim>::quickSelectHelper(vector<Point<Dim>>& list, int dimension,
 }
 
 template <int Dim>
-Point<Dim>& KDTree<Dim>::quickSelect(vector<Point<Dim>>& list, int dimension, unsigned left, unsigned right, unsigned k){
+Point<Dim>& KDTree<Dim>::quickSelect(vector<Point<Dim>>& list, unsigned left, unsigned right, unsigned k, int dim){
   /*
-  Pseudocode:
+  AMA Slides Pseudocode:
     if left = right then   // If the list contains only one element,
         return list[left]  // return that element
     pivotIndex  := ...     // select a pivotIndex between left and right,
@@ -123,33 +123,45 @@ Point<Dim>& KDTree<Dim>::quickSelect(vector<Point<Dim>>& list, int dimension, un
     return list[left];
   }
   unsigned pivotIndex = k;
-  pivotIndex = quickSelectHelper(list, dimension, left, right, pivotIndex); 
+  pivotIndex = quickSelectHelper(list, left, right, pivotIndex, dim); 
 
   if (k == pivotIndex) {
     return list[k];
   } else if(k < pivotIndex) {
-    return quickSelect(list, dimension, left, pivotIndex - 1, k);
+    return quickSelect(list, left, pivotIndex - 1, k, dim);
   } else {
-    return quickSelect(list, dimension, pivotIndex + 1, right, k); 
+    return quickSelect(list, pivotIndex + 1, right, k, dim); 
   }
 }
 
 template <int Dim>
-typename KDTree<Dim>::KDTreeNode* KDTree<Dim>::buildTree(vector<Point<Dim>>& points, unsigned left, unsigned right, int dim) {
-  if (points.empty() || right >= points.size() || left >= points.size() || left < 0  || right < 0 || left > right) {
+typename KDTree<Dim>::KDTreeNode* KDTree<Dim>::buildTree(vector<Point<Dim>>& list, unsigned left, unsigned right, int dim) {
+  /*   AMA Slides Pseudocode:
+    function buildTree(points, dim, left, right, curRoot) :=
+    // continue if we have points left to include
+    if left <= right:
+    middle = (left + right) / 2
+    rearrange points according to quickselect algorithm
+    curRoot = new KDTreeNode at middle point
+
+    recurse left subtree on (dim + 1) % Dim
+    recurse right subtree on (dim + 1) % Dim
+*/
+  if (list.empty() || left >= list.size() || right >= list.size() || left < 0  || right < 0) { // base case & constraints
     return NULL; 
   } 	
-  unsigned median = (left + right) / 2; 
-  KDTreeNode* subroot_ = new KDTreeNode(quickSelect(points, dim%Dim, left, right, median));
+  if (left <= right) {
+    unsigned median = (left + right) / 2; 
+    KDTreeNode* subroot_ = new KDTreeNode(quickSelect(list, left, right, median, dim%Dim)); //     curRoot = new KDTreeNode at middle point
+    subroot_->left = buildTree(list, left, median-1, (dim + 1) % Dim); 
+    subroot_->right = buildTree(list, median+1, right, (dim + 1) % Dim);  
 
-  size++;
-  dim++;
-
-  subroot_->left = buildTree(points, left, median-1, dim); 
-  subroot_->right = buildTree(points, median+1, right, dim);  
-
- 	return subroot_;
+    return subroot_;
+  } else {
+    return NULL;
+  }
 }
+
 template <int Dim>
 KDTree<Dim>::KDTree(const KDTree<Dim>& other) {
   /**
@@ -198,9 +210,9 @@ Point<Dim> KDTree<Dim>::findNearestNeighbor(const Point<Dim>& query) const
 }
 
 template <int Dim>
-Point<Dim> KDTree<Dim>::findNearestNeighborHelper(Point<Dim> nearest, const Point<Dim> query, KDTreeNode *subroot, int dimension) const {
-/* PSEUDOCODE:
-    if curRoot is bottom:
+Point<Dim> KDTree<Dim>::findNearestNeighborHelper(Point<Dim> nearest, const Point<Dim> query, KDTreeNode *subroot, int dim) const {
+/*   AMA Slides Pseudocode:
+  if curRoot is bottom:
 	return curRoot
 
   if query[dim] is on left side of curRoot[dim]:
@@ -227,9 +239,9 @@ Point<Dim> KDTree<Dim>::findNearestNeighborHelper(Point<Dim> nearest, const Poin
       return subroot->point;
     }
     bool traverse_left = false; 
-    int new_dim = (dimension + 1) % Dim;
+    int new_dim = (dim + 1) % Dim;
   // check if query[dim] is on left side of curRoot[dim], meaning that the value of the point is smaller
-    if (smallerDimVal(query, subroot->point, dimension)) {
+    if (smallerDimVal(query, subroot->point, dim)) {
       if (subroot->left) {     // if it is, check if there is a left subtree
         nearest = findNearestNeighborHelper(nearest, query, subroot->left, new_dim);       // recursive call on left subtree
         traverse_left = true;
@@ -244,7 +256,7 @@ Point<Dim> KDTree<Dim>::findNearestNeighborHelper(Point<Dim> nearest, const Poin
     }
 
     double radius = calculate(query, nearest);
-    double splitDist = ((subroot->point)[dimension] - query[dimension]) * ((subroot->point)[dimension] - query[dimension]);
+    double splitDist = ((subroot->point)[dim] - query[dim]) * ((subroot->point)[dim] - query[dim]);
     
     if (radius >= splitDist) {
       Point<Dim> temp = nearest;
