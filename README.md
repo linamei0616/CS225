@@ -4,12 +4,14 @@ Fall 2022 Release Repo
 mp_stickers: 100 <br />
 mp_clean_lists: 110 <br />
 mp_traversals: 93 (late) <br />
+mp_mosaics: 93 (late) <br />
 
 lab_debug: 100 <br />
 lab_memory: 100 <br />
 lab_quacks: 100 <br />
 lab_bst: 100 <br />
 lab_avl: 100 <br />
+lab_huffman: 100 <br />
 
 Notes:
 mp_traversals:
