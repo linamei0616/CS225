@@ -21,7 +21,23 @@ MosaicCanvas* mapTiles(SourceImage const& theSource,
     /**
      * @todo Implement this function!
      */
-
-    return NULL;
+    int rows = theSource.getRows();
+    int cols = theSource.getColumns();
+    MosaicCanvas* image = new MosaicCanvas(rows, cols);
+    vector<Point<3>> points;
+    map<Point<3>, TileImage*> tile_map;
+    for (unsigned i = 0; i < theTiles.size(); i++) {
+        Point<3> point = convertToXYZ(theTiles[i].getAverageColor());
+        points.push_back(point);
+        tile_map[point] = &theTiles[i];
+    }
+    KDTree<3> avg(points);
+    for (int i = 0; i < rows; i++) {
+        for (int j=0; j < cols; j++) {
+            TileImage* index = tile_map[avg.findNearestNeighbor(convertToXYZ(theSource.getRegionColor(i, j)))];
+            image->setTile(i, j, index);
+        }
+    }
+    return image;
 }
 
