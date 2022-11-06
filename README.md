@@ -12,6 +12,7 @@ lab_quacks: 100 <br />
 lab_bst: 100 <br />
 lab_avl: 100 <br />
 lab_huffman: 100 <br />
+lab_heaps: 100 <br />
 
 Notes:
 mp_traversals:
