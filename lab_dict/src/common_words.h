@@ -43,11 +43,14 @@ class CommonWords
     /**
      * #file_word_maps holds a map for each file. Each map associates a word in
      * that file to the number of times it has been seen in that file.
+      each element in the vector is a file
+      each map contains a list with pairs <word, number of times the word is used in that file>
      */
     vector<map<string, unsigned int>> file_word_maps;
 
     /**
      * #common maps a word to the number of documents that word appears in
+      each map contains a list with pairs <word, number of documents the word is contained in that document
      */
     std::map<std::string, unsigned int> common;
 

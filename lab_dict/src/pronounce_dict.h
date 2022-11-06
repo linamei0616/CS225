@@ -53,5 +53,5 @@ class PronounceDict
     bool homophones(const std::string& word1, const std::string& word2) const;
 
   private:
-    std::map<std::string, std::vector<std::string>> dict;
+    std::map<std::string, std::vector<std::string>> dict; // mapping a word to its pronounciation, given
 };

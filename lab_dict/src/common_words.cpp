@@ -48,12 +48,34 @@ void CommonWords::init_file_word_maps(const vector<string>& filenames)
         // file
         vector<string> words = file_to_vector(filenames[i]);
         /* Your code goes here! */
+        
+        map<string, unsigned int>word_freq;
+        //iterate through every word
+        for (std::string word : words) {
+            // create a helper function lookup to see if the word already exists in our dict
+            if (word_freq.find(word) == word_freq.end()) {
+                word_freq[word] = 1;
+            } else {
+                word_freq[word]++;
+            }
+            // <map<string, unsigned int>>::iterator lookup = file_word_maps.find(word);
+        }
+        file_word_maps.push_back(word_freq);
     }
 }
 
 void CommonWords::init_common()
 {
     /* Your code goes here! */
+    for (map<string, unsigned int> word_maps : file_word_maps) { // for every file
+        for (auto it = word_maps.begin(); it != word_maps.end(); it++) {
+            if (common.find(it->first) == common.end()) {
+                common[it->first] = 1;
+            } else {
+                common[it->first]++;
+            }
+        }
+    } 
 }
 
 /**
@@ -65,6 +87,20 @@ vector<string> CommonWords::get_common_words(unsigned int n) const
 {
     vector<string> out;
     /* Your code goes here! */
+    map<string, unsigned int> freq; // string = word, unsigned int = # of docs it appeared in
+    for (map<string, unsigned int> word_maps : file_word_maps) {
+        for (auto it = word_maps.begin(); it != word_maps.end(); it++) {
+            if (it->second >= n) {
+                freq[it->first]++;
+            }
+        }
+    }
+    for (auto it = freq.begin(); it != freq.end(); it++) { // compare the local freq to see if it matches the common, 
+                                                           // if so, then all files contain the word >= n times
+        if (it->second == common.find(it->first)->second) { 
+            out.push_back(it->first);
+        }
+    }
     return out;
 }
 

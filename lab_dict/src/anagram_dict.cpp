@@ -10,10 +10,20 @@
 
 #include <algorithm> /* I wonder why this is included... */
 #include <fstream>
+#include <iostream>
 
 using std::string;
 using std::vector;
 using std::ifstream;
+
+// helper function
+std::map<char, unsigned int> check_word(std::string word) { // returns a map which is a list of words and their count
+    std::map<char, unsigned int> map;
+    for (char letter : word) {
+        map[letter]++;
+    }
+    return map;
+}
 
 /**
  * Constructs an AnagramDict from a filename with newline-separated
@@ -23,6 +33,27 @@ using std::ifstream;
 AnagramDict::AnagramDict(const string& filename)
 {
     /* Your code goes here! */
+    std::vector<std::string> vect_words;
+    ifstream wordsFile(filename);
+    string word;
+    if (wordsFile.is_open()) {
+        /* Reads a line from `wordsFile` into `word` until the file ends. */
+        while (getline(wordsFile, word)) {
+            vect_words.push_back(word);
+        }
+    }
+    for (std::string w : vect_words) {
+        if (dict.find(w) == dict.end()) { // if the dict doesn't have w yet
+            dict[w] = std::vector<std::string>(); // intiialize with no anagrams
+        } else {
+            for (auto it = dict.begin(); it != dict.end(); it++) { // run thru existing dict
+                if (check_word(w) == check_word(it->first)) { // if they return the same char maps
+                    dict[it->first].push_back(w); // they are anagrams so update dict
+                    dict[w] = dict[it->first];
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -32,6 +63,17 @@ AnagramDict::AnagramDict(const string& filename)
 AnagramDict::AnagramDict(const vector<string>& words)
 {
     /* Your code goes here! */
+    for (std::string w : words) {
+        if (dict.find(w) == dict.end()) { // if the dict doesn't have w yet
+            dict[w] = std::vector<std::string>(); // intiialize with no anagrams
+        }
+        for (auto it = dict.begin(); it != dict.end(); it++) { // run thru existing dict
+            if (check_word(w) == check_word(it->first)) { // if they return the same char maps
+                dict[it->first].push_back(w); // they are anagrams so update dict
+                dict[w] = dict[it->first];
+        }
+        }
+    }
 }
 
 /**
@@ -43,7 +85,10 @@ AnagramDict::AnagramDict(const vector<string>& words)
 vector<string> AnagramDict::get_anagrams(const string& word) const
 {
     /* Your code goes here! */
-    return vector<string>();
+    if (dict.find(word) == dict.end()) {
+        return vector<string>();
+    }
+    return dict.find(word)->second;
 }
 
 /**
@@ -55,5 +100,11 @@ vector<string> AnagramDict::get_anagrams(const string& word) const
 vector<vector<string>> AnagramDict::get_all_anagrams() const
 {
     /* Your code goes here! */
-    return vector<vector<string>>();
+    vector<vector<string>> vect;
+    for (auto it = dict.begin(); it != dict.end(); it++) {
+        if ((it->second).size() >= 2) {
+            vect.push_back(it->second);
+        }
+    }
+    return vect;
 }
