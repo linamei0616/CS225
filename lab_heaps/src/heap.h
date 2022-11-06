@@ -44,7 +44,7 @@ class heap
      */
     T pop();
 
-    /**
+    /** //
      * Returns, but does not remove, the element with highest priority.
      *
      * @return The highest priority element in the entire heap.
