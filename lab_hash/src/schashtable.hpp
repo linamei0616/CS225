@@ -4,6 +4,8 @@
  */
 
 #include "schashtable.h"
+#include <iostream>
+using namespace std;
  
 template <class K, class V>
 SCHashTable<K, V>::SCHashTable(size_t tsize)
@@ -54,7 +56,13 @@ void SCHashTable<K, V>::insert(K const& key, V const& value)
      * @todo Implement this function.
      *
      */
-}
+    unsigned int index = hashes::hash(key, size); // index to be hashed
+    elems++;
+    table[index].push_front(std::make_pair(key, value));
+    if (shouldResize()) {
+        resizeTable();
+    }
+}   
 
 template <class K, class V>
 void SCHashTable<K, V>::remove(K const& key)
@@ -66,17 +74,28 @@ void SCHashTable<K, V>::remove(K const& key)
      * Please read the note in the lab spec about list iterators and the
      * erase() function on std::list!
      */
-    (void) key; // prevent warnings... When you implement this function, remove this line.
+    size_t index = hashes::hash(key, size);
+    for (typename std::list<std::pair<K,V>>::iterator it = table[index].begin(); it != table[index].end(); it++) {
+        if (it->first == key) { //it->first is a key
+            table[index].erase(it);
+            break;
+            elems--;
+        }
+    }
 }
 
 template <class K, class V>
 V SCHashTable<K, V>::find(K const& key) const
 {
-
     /**
      * @todo: Implement this function.
      */
-
+    size_t index = hashes::hash(key, size);
+    for (typename std::list<std::pair<K,V>>::iterator it = table[index].begin(); it != table[index].end(); it++) {
+        if (it->first == key) { //it->first is a key
+            return it->second;
+        }
+    }
     return V();
 }
 
@@ -134,4 +153,17 @@ void SCHashTable<K, V>::resizeTable()
      *
      * @hint Use findPrime()!
      */
+    size_t new_size = findPrime(size * 2);
+    list<pair<K, V>>* new_table = new list<pair<K, V>>[new_size];
+    for (unsigned i = 0; i < size; i++) {
+        for (it = table[i].begin(); it != table[i].end(); it++) {
+        size_t idx = hashes::hash(it->first, new_size);
+        pair<K,V> pair(it->first, it->second);
+        new_table[idx].push_back(pair);
+        }
+    }
+    delete[] table;
+    table = new_table;
+    size = new_size;
+
 }

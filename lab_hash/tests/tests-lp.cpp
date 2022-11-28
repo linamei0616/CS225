@@ -21,10 +21,11 @@ TEST_CASE("LP::testRemoveEASY", "[valgrind][weight=6]")
 	hashTable.insert("__SENTINEL__", 0);
 	if (!hashTable.keyExists("__SENTINEL__"))
 		FAIL("Insert did not work");
-
+        std::cout << __LINE__ << std::endl;
 	hashTable.remove("all");
 	if (hashTable.keyExists("all"))
 		FAIL("Did not remove key: 'all'");
+
 	hashTable.remove("base");
 	if (hashTable.keyExists("base"))
 		FAIL("Did not remove key: 'base'");
