@@ -12,6 +12,7 @@
 #include "schedule.h"
 #include "utils.h"
 #include <algorithm>
+#include <bits/stdc++.h>
 
 /**
  * Given a filename to a CSV-formatted text file, create a 2D vector of strings where each row
@@ -25,7 +26,21 @@
  */
 V2D file_to_V2D(const std::string & filename){
     // Your code here!
-
+    std::vector<std::string> line_vect;
+    std::vector<std::vector<std::string>> vect;
+    std::string string_file = Trim(file_to_string(filename));
+    int count_line = SplitString(string_file, '\n', line_vect);
+    vect.resize(count_line);
+    for (int i = 0; i < count_line; i++) {
+        std::string word = Trim(line_vect[i]);
+        SplitString(word, ',', vect[i]);
+    }
+    for (unsigned long i = 0; i < vect.size(); i++) {
+        for (unsigned long j = 0; j < vect[i].size(); j++) {
+            vect[i][j] = Trim(vect[i][j]);
+        }
+     }
+    return vect;
 }
 
 /**
@@ -40,7 +55,34 @@ V2D file_to_V2D(const std::string & filename){
  */
 V2D clean(const V2D & cv, const V2D & student){
     // YOUR CODE HERE
-
+    std::vector<std::vector<std::string>> rows;
+    for (unsigned long i = 0; i < cv.size(); i++) { // iterating courses vector
+        std::vector<std::string> vect_stud;
+        std::string course_name = cv[i][0];
+        vect_stud.push_back(course_name); // push course name into the vector
+        for (unsigned long j = 0; j < cv[i].size(); j++) {  // looking through the students from cv rows
+            std::string student_name = cv[i][j]; // check if the student roster also has the same class
+            unsigned long count = 0; // iterate row 0
+            while (count < student.size()) {
+                if (student[count][0] != student_name) { // not matched so skip
+                    count++;
+                    continue;
+                } else { // matched
+                    for (unsigned long col = 0; col < student[count].size(); col++) {
+                        if (student[count][col] == course_name) { // contains course from student vector
+                            vect_stud.push_back(student_name); // pushes course name into the vector
+                            break;
+                        }
+                    }
+                }
+                count++;
+            }
+        }
+        if (vect_stud.size() > 1) {
+            rows.push_back(vect_stud);
+        }
+    }
+    return rows;
 }
 
 /**
@@ -61,5 +103,5 @@ V2D clean(const V2D & cv, const V2D & student){
  */
 V2D schedule(const V2D &courses, const std::vector<std::string> &timeslots){
     // Your code here!
-
+    return V2D();
 }
