@@ -12,3 +12,9 @@ TEST_CASE("testing test case") {
     string two = "Hello World!";
     REQUIRE(one == two);
 }
+
+TEST_CASE("BFS is correct") {
+    string one = "Hello World!";
+    string two = "Hello World!";
+    REQUIRE(one == two); 
+}

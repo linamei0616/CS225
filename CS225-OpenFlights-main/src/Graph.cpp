@@ -2,15 +2,12 @@
 #include <cmath>
 #include <cstdlib>
 #include <map>
-#include <unordered_map>
-#include <vector>
 #include <queue>
-
+#include <unordered_map>
 
 #include "Graph.h"
 #include "utils.h"
 #include <algorithm>
-
 
 Graph::Graph(string routes, string airports) {
     
@@ -43,25 +40,7 @@ Graph::Graph(string routes, string airports) {
 }
 
 void Graph::Dijkstra(int source, int dest) {
-    /*
-    Dijkstra(Graph, source, destination):
-
-  initialize distances  // initialize tentative distance value
-  initialize previous   // initialize a map that maps current node -> its previous node
-  initialize priority_queue   // initialize the priority queue
-  initialize visited
-
-  while the top of priority_queue is not destination:
-      get the current_node from priority_queue
-      for neighbor in current_node's neighbors and not in visited:
-          if update its neighbor's distances:
-              previous[neighbor] = current_node
-      save current_node into visited
-
-  extract path from previous
-  return path and distance
-    */
-set<int> visited;
+    set<int> visited;
     unordered_map<int, int> prev;
     unordered_map<int, int> dist;
     for (auto p : nodeToAirportName) {
@@ -70,7 +49,7 @@ set<int> visited;
         } else {
             dist[p.first] = INT32_MAX;
         }
-        prev[p.first] == NULL;
+        prev[p.first] = -1;
     }
     struct Compare //used for priority queue to compare distances in pairs
     {
@@ -86,15 +65,51 @@ set<int> visited;
     while (q.top().first != dest) {
         pair<int, int> curr = q.top();
         q.pop();
-        for (auto p : adjList[curr.first]) { //first is neighbor node, second is distance from curr node
+        for (auto p : adjList[curr.first]) { //first is nieghbor node, second is distance from curr node
             if (visited.count(p.first) == 1) {
                 continue;
             }
             if (p.second + dist[curr.first] < dist[p.first]) {
                 dist[p.first] = p.second + dist[curr.first];
                 prev[p.first] = curr.first;
+                pair<int, int> push(p.first, dist[p.first]);
+                q.push(push);
             }
         }
         visited.insert(curr.first);
+    }
+    int e = dest;
+    vector<int> path;
+    while (true) {
+        path.push_back(e);
+        if (prev[e] == -1) {
+            break;
+        }
+        e = prev[e];
+    }
+    cout << "SOURCE: " + to_string(path[path.size() - 1]) + ", " + nodeToAirportName[source] << endl;
+    for (size_t i = path.size() - 2; i>0; i--) {
+        cout << to_string(path[i]) + ", " + nodeToAirportName[path[i]] << endl;
+    }
+    cout << "DESTINATION: " + to_string(path[0]) + ", " + nodeToAirportName[dest] << endl;
+}
+
+void Graph::BFS(int source) {
+    set<int> visited; // a set to store references to all visited nodes
+    queue<int> que; // a queue to store references to nodes we should visit later
+
+    cout << "BFS Traversal" << endl; cout << "SOURCE: " + nodeToAirportName[source] << endl;
+    que.push(source);
+    visited.insert(source);
+    while (!que.empty()) {
+        int curr = que.front();
+        que.pop();
+        std::cout << to_string(curr) + " " + nodeToAirportName[curr] << std::endl;
+        for (auto neighbor : adjList[curr]) {
+            if (visited.count(neighbor.first) == 0) { // not in visited
+                que.push(neighbor.first);
+                visited.insert(neighbor.first);
+            }
+        }
     }
 }

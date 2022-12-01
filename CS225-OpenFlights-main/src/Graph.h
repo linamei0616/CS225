@@ -16,8 +16,7 @@ class Graph {
         Graph();
         Graph(string routes, string airports);
         void Dijkstra(int source, int dest);
-
-
+        void BFS(int source);
     private:
         // Do we even need these, and is there a more efficient way...
         unordered_map<int, string> nodeToAirportName;
@@ -25,7 +24,4 @@ class Graph {
 
         // Graph representation
         unordered_map<int, vector<pair<int, double>>> adjList;
-
-
-    
 };
