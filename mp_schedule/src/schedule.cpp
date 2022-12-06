@@ -103,5 +103,124 @@ V2D clean(const V2D & cv, const V2D & student){
  */
 V2D schedule(const V2D &courses, const std::vector<std::string> &timeslots){
     // Your code here!
-    return V2D();
+
+    Graph graph = Graph(courses.size());
+
+    // make adj list
+    std::unordered_map<std::string, std::vector<std::string>> adjList;
+    unsigned long num_courses = courses.size();
+    for (unsigned long x = 0; x < num_courses; x++) {
+        for (unsigned long j=1; j < courses[x].size(); j++) {
+            std::string student_name = courses[x][j];
+            for (unsigned long k = 0; k < num_courses; k++) {
+                if (courses[x][0] == courses[k][0]) {
+                    continue;
+                }
+                if (std::count(courses[k].begin(),courses[k].end(),student_name)) {
+                    // add to adj matrix
+                    graph.addEdge(courses[k][0],courses[x][0]);
+                }
+            }
+        }
+    }
+
+    // testing adjList
+        for (auto adjs : graph.adj) {
+            std::cout << adjs.first << " : ";
+            for(auto it = adjs.second.begin(); it != adjs.second.end(); it++) { 
+                std::cout << *it + " ";
+                }
+            std::cout << std::endl;
+        }
+
+    std::unordered_map<std::string, int> map = graph.greedyColoring(); // course, color
+    std::vector<std::vector<std::string>> output;
+
+    std::cout << graph.max_colors << std::endl;
+    std::cout << int(timeslots.size()) << std::endl;
+
+    if (graph.max_colors > graph.V+1 || graph.max_colors >= int(timeslots.size())) {
+        std::vector<std::string> empty(1, "-1");
+        output.push_back(empty);
+    // printing output
+        std::cout << "empty vect" << std::endl;
+        return output;
+    }
+
+    // see if every course has a color
+        for (auto elem : map) {
+            std::cout << "course : " << elem.first << "has color : " << elem.second << std::endl;
+        }
+
+    for (unsigned long i = 0; i < timeslots.size(); i++) {
+        std::vector<std::string> row;
+        row.push_back(timeslots[i]);
+        for (auto elem : map) {
+            if (elem.second == int(i)) {
+                row.push_back(elem.first);
+            }
+        }
+        output.push_back(row);
+    } 
+
+    // printing output
+    for (unsigned long i = 0; i < output.size(); i++) {
+        for (unsigned long j = 0; j < output[i].size(); j++) {
+            std::cout << output[i][j] + " ";
+        }
+        std::cout << std::endl;
+    }
+
+    return output;
+}
+
+void Graph::addEdge(std::string v, std::string w) {
+    if (!(std::count(adj[v].begin(),adj[v].end(), w)))  {// element not found, add
+        adj[v].push_back(w);
+    }
+    if (!(std::count(adj[w].begin(),adj[w].end(), v)))  {
+        adj[w].push_back(v);
+    }
+}
+std::unordered_map<std::string, int> Graph::greedyColoring(std::string starting) {
+    std::unordered_map<std::string, int> color;
+
+    for (auto elem : adj) {
+        color.insert({elem.first, -1});
+    }
+    color[starting] = 0;
+
+    std::vector<bool> avalible(V+1, false);
+    for (auto courses : adj) {
+        for (auto adj_courses : courses.second) {
+            if (color[adj_courses] != -1) {
+                avalible[color[adj_courses]] = true; // the color cr is assigned to one of its adjacent vertices
+            }
+        }
+        // find first avalible color
+        int cr;
+        for (cr = 0; cr < V; cr++) {
+            if (avalible[cr] == false) {
+                break;
+            }
+        }
+        color[courses.first] = cr;
+
+        for (auto adj_courses : courses.second) {
+            if (color[adj_courses] != -1) {
+                avalible[color[adj_courses]] = false; // the color cr is assigned to one of its adjacent vertices
+            }
+        }
+    }
+
+    // find max color
+    for (auto elems : color) {
+        if (elems.second > max_colors) {
+            max_colors = elems.second;
+        }
+    }
+    return color;
+}\
+Graph::Graph(int V) {
+    this->V = V; 
 }

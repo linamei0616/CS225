@@ -54,3 +54,15 @@ V2D clean(const V2D & cv, const V2D & sv);
  * @return A 2D vector which each row is a timeslot with all the courses scheduled for that time
  */
 V2D schedule(const V2D &courses, const std::vector<std::string> &timeslots);
+
+class Graph {
+    public:
+        Graph(int V);
+
+        void addEdge(std::string v, std::string w);
+        std::unordered_map<std::string, int> greedyColoring(std::string starting);
+
+        int V;    // No. of vertices
+        std::unordered_map<std::string, std::vector<std::string>> adj;    // A dynamic array of adjacency lists
+        int max_colors = 0;
+};
