@@ -125,6 +125,7 @@ V2D schedule(const V2D &courses, const std::vector<std::string> &timeslots){
     }
 
     // testing adjList
+    /*
         for (auto adjs : graph.adj) {
             std::cout << adjs.first << " : ";
             for(auto it = adjs.second.begin(); it != adjs.second.end(); it++) { 
@@ -132,26 +133,38 @@ V2D schedule(const V2D &courses, const std::vector<std::string> &timeslots){
                 }
             std::cout << std::endl;
         }
+    */
+    int starting = 0;
+    std::unordered_map<std::string, int> map = graph.greedyColoring(courses[starting][0]); // course, color
 
-    std::unordered_map<std::string, int> map = graph.greedyColoring(); // course, color
     std::vector<std::vector<std::string>> output;
 
-    std::cout << graph.max_colors << std::endl;
-    std::cout << int(timeslots.size()) << std::endl;
+    // checking to see if theres a better option
+    while ( ( graph.max_colors > graph.V+1 || graph.max_colors >= int(timeslots.size()) ) && starting < graph.V-1) {
+        starting++;
+        map = graph.greedyColoring(courses[starting][0]);
+        for (auto elems : map) {
+            if (elems.second > graph.max_colors) {
+                graph.max_colors = elems.second;
+            }
+        }
+    }
 
+    // no better option
     if (graph.max_colors > graph.V+1 || graph.max_colors >= int(timeslots.size())) {
         std::vector<std::string> empty(1, "-1");
         output.push_back(empty);
-    // printing output
-        std::cout << "empty vect" << std::endl;
         return output;
     }
 
-    // see if every course has a color
+    // printing map
+    /*
         for (auto elem : map) {
             std::cout << "course : " << elem.first << "has color : " << elem.second << std::endl;
         }
-
+    */
+    
+    // otherwise you can schedule time
     for (unsigned long i = 0; i < timeslots.size(); i++) {
         std::vector<std::string> row;
         row.push_back(timeslots[i]);
@@ -164,13 +177,14 @@ V2D schedule(const V2D &courses, const std::vector<std::string> &timeslots){
     } 
 
     // printing output
-    for (unsigned long i = 0; i < output.size(); i++) {
-        for (unsigned long j = 0; j < output[i].size(); j++) {
-            std::cout << output[i][j] + " ";
+    /*
+        for (unsigned long i = 0; i < output.size(); i++) {
+            for (unsigned long j = 0; j < output[i].size(); j++) {
+                std::cout << output[i][j] + " ";
+            }
+            std::cout << std::endl;
         }
-        std::cout << std::endl;
-    }
-
+    */
     return output;
 }
 
@@ -212,13 +226,13 @@ std::unordered_map<std::string, int> Graph::greedyColoring(std::string starting)
             }
         }
     }
-
     // find max color
     for (auto elems : color) {
         if (elems.second > max_colors) {
             max_colors = elems.second;
         }
     }
+
     return color;
 }\
 Graph::Graph(int V) {

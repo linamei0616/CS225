@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <catch2/catch_test_macros.hpp>
+#include <iostream>
 
 using std::string;
 
@@ -72,8 +73,8 @@ void verifySchedule(const V2D &rosters, const V2D &sched, unsigned slots) {
     for(auto student:student_schedule) {
         std::vector<bool> busy(slots);
         for(auto course:student.second){
-            auto exam_time = exam_schedule.find(course);
-            REQUIRE(exam_time != exam_schedule.end() );
+            auto exam_time = exam_schedule.find(course); 
+            REQUIRE(exam_time != exam_schedule.end() ); // course should be on exam
             unsigned time_index = exam_time->second;
             REQUIRE(busy[time_index] == false );
             busy[time_index] = true;

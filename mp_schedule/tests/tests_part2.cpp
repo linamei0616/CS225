@@ -16,6 +16,14 @@ TEST_CASE("schedule() Approximate Public Test 1", "[weight=2]") {
      {"CS395", "gpDS", "EYge", "MnWd"}
      };
 
+     /*
+     CS577 : CS500, CS395, CS591
+     CS591 : CS395, CS577
+     CS386 : CS500, CS395
+     CS500 : CS577, CS395
+     CS395 : CS591, CS386, CS500, CS577
+     */
+
     std::vector<std::string> timeslots = {"9AM", "11AM", "1PM", "3PM"};
 
     V2D out = schedule(roster, timeslots);
